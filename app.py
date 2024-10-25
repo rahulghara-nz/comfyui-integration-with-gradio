@@ -4,7 +4,6 @@ import os
 import time
 from icecream import ic
 import requests
-import numpy as np
 from PIL import Image
 import io
 import gradio as gr
@@ -33,10 +32,11 @@ def get_latest_image(folder):
 def upload_image(file):
     try:
         image = Image.fromarray(file)
-        # print(image,type(image))
+        # print("type",type(image))
         img_byte_arr = io.BytesIO()
-        image_format = image.format if image.format else 'PNG'
-        image.save(img_byte_arr, format=image_format)  # Change format to the desired one (JPEG, PNG, etc.)
+        # image_format = image.format if image.format else 'PNG'
+        image_format = 'PNG' # Change format to PNG as gradio only provides np array like image input
+        image.save(img_byte_arr, format=image_format)
         img_byte_arr = img_byte_arr.getvalue()
 
         files = [("image", (f"image.{image_format.lower()}", img_byte_arr, f"image/{image_format.lower()}"))]
@@ -56,7 +56,7 @@ def generate_image(prompt,file):
     api_data['6']['inputs']['text'] = prompt
     api_data['13']['inputs']['image'] = image_upolad_response.get("name","")
 
-    previous_image = get_latest_image (OUTPUT_DIR)
+    previous_image = get_latest_image(OUTPUT_DIR)
     # Start the pipeline
     start_queue(api_data)
 
@@ -69,4 +69,8 @@ def generate_image(prompt,file):
 if __name__ == "__main__":
     demo = gr.Interface(fn=generate_image, inputs=["text","image"], outputs="image")
     demo.launch(allowed_paths=['/home/user/workspace/ComfyUI/output'])
+    # img = Image.open("/home/user/Downloads/_1lHf3AM_1716131144564.png")
+    # print(img.format,"gggggggggggggggggggggg")
+    # print("type",type(img))
+
 
